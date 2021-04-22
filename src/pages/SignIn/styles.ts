@@ -1,10 +1,11 @@
+import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 
 export const Container = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-  padding: 0 30px;
+  padding: 0 30px ${Platform.OS === 'android' ? 90 : 40}px;
 `;
 
 export const Title = styled.Text`
@@ -32,7 +33,7 @@ export const CreateAccountButton = styled.TouchableOpacity`
   background: #312e38;
   border-top-width: 1px;
   border-color: #232129;
-  padding: 10px 0;
+  padding: 15px 0;
 
   justify-content: center;
   align-items: center;
@@ -40,7 +41,8 @@ export const CreateAccountButton = styled.TouchableOpacity`
 `;
 
 export const CreateAccountButtonText = styled.Text`
-  color: #f4ede8;
+  color: #ff9000;
   font-size: 16px;
   font-family: 'RobotoSlab-Regular';
+  margin-left: 16px;
 `;
