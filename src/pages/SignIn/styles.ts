@@ -12,7 +12,7 @@ export const Title = styled.Text`
   font-size: 20px;
   color: #f4ede8;
   font-family: 'RobotoSlab-Medium';
-  margin: 60px;
+  margin: 65px 0 20px 0;
 `;
 
 export const ForgotPassword = styled.TouchableOpacity`
