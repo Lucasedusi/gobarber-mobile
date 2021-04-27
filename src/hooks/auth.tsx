@@ -1,5 +1,12 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+
 import api from '../services/api';
 
 interface AuthState {
@@ -14,6 +21,7 @@ interface SignInCredentials {
 
 interface AuthContextData {
   user: object;
+  loading: boolean;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
 }
@@ -22,17 +30,23 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStorageData(): Promise<void> {
-      const [token, user] = await AsyncStorage.multiGet(['@GoBarber:token', '@GoBarber:user']);
+    async function loadStoragedData(): Promise<void> {
+      const [token, user] = await AsyncStorage.multiGet([
+        '@GoBarber:token',
+        '@GoBarber:user',
+      ]);
 
       if (token[1] && user[1]) {
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
+
+      setLoading(false);
     }
 
-    loadStorageData();
+    loadStoragedData();
   }, []);
 
   const signIn = useCallback(async ({ email, password }) => {
@@ -52,12 +66,16 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(['@GoBarber:token', '@GoBarber:user']);
+    await AsyncStorage.multiRemove(['@GoBarber:user', '@GoBarber:token']);
 
     setData({} as AuthState);
   }, []);
 
-  return <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 function useAuth(): AuthContextData {
