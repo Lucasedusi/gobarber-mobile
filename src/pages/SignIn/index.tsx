@@ -1,19 +1,29 @@
 import React, { useCallback, useRef } from 'react';
-import { Image, TextInput, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import {
+  Alert,
+  Image,
+  View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  TextInput,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
-import { Form } from '@unform/mobile';
 import * as Yup from 'yup';
+
+import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
 import { useAuth } from '../../hooks/auth';
 
+import getValidationErrors from '../../utils/getValidationErrors';
+
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import getValidationErrors from '../../utils/getValidationErrors';
-
 import logoImg from '../../assets/logo.png';
+
 import {
   Container,
   Title,
@@ -32,9 +42,8 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
-  const { signIn, user } = useAuth();
 
-  console.log(user);
+  const { signIn } = useAuth();
 
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
@@ -42,7 +51,9 @@ const SignIn: React.FC = () => {
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
-          email: Yup.string().email('Digite um e-mail válido').required('E-mail obrigatório'),
+          email: Yup.string()
+            .email('Digite um e-mail válido')
+            .required('E-mail obrigatório'),
           password: Yup.string().required('Senha obrigatória'),
         });
 
@@ -63,7 +74,10 @@ const SignIn: React.FC = () => {
           return;
         }
 
-        Alert.alert('Erro na Autenticação', 'Ocorreu um erro ao fazer login, cheque as credenciais.');
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu um erro ao fazer login, cheque as credenciais.',
+        );
       }
     },
     [signIn],
@@ -71,19 +85,27 @@ const SignIn: React.FC = () => {
 
   return (
     <>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        enabled
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flex: 1 }}
+        >
           <Container>
-            <Image source={logoImg} width={50} height={50} />
+            <Image source={logoImg} />
 
-            <Title>Faça Seu Login</Title>
-
-            <Form style={{ width: '100%' }} ref={formRef} onSubmit={handleSignIn}>
+            <View>
+              <Title>Faça seu logon</Title>
+            </View>
+            <Form style={{width: '100%'}} ref={formRef} onSubmit={handleSignIn}>
               <Input
-                name="email"
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="email-address"
+                name="email"
                 icon="mail"
                 placeholder="E-mail"
                 returnKeyType="next"
@@ -118,11 +140,13 @@ const SignIn: React.FC = () => {
             </ForgotPassword>
           </Container>
         </ScrollView>
-        <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
-          <Icon name="log-in" size={20} color="#ff9000" />
-          <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
-        </CreateAccountButton>
       </KeyboardAvoidingView>
+
+      <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
+        <Icon name="log-in" size={20} color="#ff9000" />
+
+        <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
+      </CreateAccountButton>
     </>
   );
 };
